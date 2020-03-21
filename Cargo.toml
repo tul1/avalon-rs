@@ -1,5 +1,5 @@
 [package]
-name = "rs-avalon"
+name = "avalon-rs"
 version = "0.1.0"
 authors = ["patricio tula <tula.patricio@gmail.com>"]
 edition = "2018"
