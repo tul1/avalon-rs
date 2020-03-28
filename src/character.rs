@@ -1,6 +1,6 @@
 use crate::utils::{Quest, Vote};
 
-pub trait Character<T>{
+pub trait Character<T> {
     fn who_am_i(&self) -> &T;
     fn am_i_evil(&self) -> bool;
     fn am_i_good(&self) -> bool;

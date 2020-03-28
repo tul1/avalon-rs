@@ -1,5 +1,5 @@
-use crate::utils::{Quest, Vote};
 use crate::character::Character;
+use crate::utils::{Quest, Vote};
 
 #[derive(PartialEq, Debug)]
 pub enum EvilCharacterName {
