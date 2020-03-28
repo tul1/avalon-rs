@@ -1,4 +1,6 @@
-use avalon_rs::*;
+use avalon_rs::character::*;
+use avalon_rs::evil_character::*;
+use avalon_rs::utils::*;
 
 fn hello_i_am_mordred() -> EvilCharacter {
     EvilCharacter::new(EvilCharacterName::Mordred)
