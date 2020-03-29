@@ -75,5 +75,5 @@ fn is_mordred_against_when_he_approves() {
 fn is_mordred_for_when_he_approves() {
     let mut player = hello_i_am_mordred();
     player.i_vote_for_mission_to(Vote::Approve);
-    assert_eq!(player.did_i_vote_to_go(), false);
+    assert_eq!(player.did_i_vote_to_go(), true);
 }
