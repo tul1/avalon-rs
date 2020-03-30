@@ -8,16 +8,22 @@ node {
         commit_id = readFile('.git/commit-id').trim()
         sh "${RUST}cargo --version"
     }
-    stage('build') {
+    stage('Build') {
         sh "${RUST}cargo build"
     }
-    stage('tests') {
-        sh "${RUST_TESTING_FLAGS} ${RUST}cargo test"
+    stage('Unit tests') {
+        sh "${RUST_TESTING_FLAGS} ${RUST}cargo test --lib"
+    }
+    stage('Integration tests') {
+        sh "${RUST_TESTING_FLAGS} ${RUST}cargo test --test integration_tests"
     }
     if(env.BRANCH_NAME == 'master') {
-        stage('publish') {
+        stage('Publish crate') {
             sh "echo publish"
             // sh "cargo publish"
         }
+    }
+    stage('Clean up') {
+        sh "rm -r ./target"
     }
 }
