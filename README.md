@@ -6,7 +6,8 @@ Avalon role game coded in Rust.
 
 # Clone, run and test out code
 ```
-git clone 
+git clone https://github.com/tul1/avalon-rs.git
+cd ./avalon-rs
 cargo build
 cargo test
 ```
