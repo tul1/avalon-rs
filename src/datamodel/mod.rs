@@ -1,13 +1,12 @@
-pub mod character;
 pub mod board;
+pub mod character;
 pub mod game;
 pub mod player;
-pub mod quest_objective;
+pub mod quest;
 
 pub use board::Board;
 pub use game::Game;
 pub use player::Player;
-pub use quest_objective::QuestObjective;
 
 //Unit tests
 #[cfg(test)]
