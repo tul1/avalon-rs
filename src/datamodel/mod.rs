@@ -1,8 +1,8 @@
-pub mod character;
-pub mod quest;
 pub mod board;
+pub mod character;
 pub mod game;
 pub mod player;
+pub mod quest;
 
 pub use board::Board;
 pub use game::Game;

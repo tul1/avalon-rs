@@ -5,7 +5,7 @@ pub struct QuestMember {
 }
 
 impl QuestMember {
-    pub fn get_action_manager(&self) -> &QuestMemberRoleActionManager{
+    pub fn get_action_manager(&self) -> &QuestMemberRoleActionManager {
         &self.action_manager
     }
 }

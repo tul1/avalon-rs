@@ -5,7 +5,7 @@ pub struct QuestProposer {
 }
 
 impl QuestProposer {
-    pub fn get_action_manager(&self) -> &QuestProposerRoleActionManager{
+    pub fn get_action_manager(&self) -> &QuestProposerRoleActionManager {
         &self.action_manager
     }
 }

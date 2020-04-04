@@ -1,6 +1,6 @@
 use crate::datamodel::quest::Quest;
 
-pub struct FinishQuest {
+pub struct FinishedQuest {
     won: bool,
     quest: Quest,
 }
