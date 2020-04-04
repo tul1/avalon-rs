@@ -1,4 +1,5 @@
 use crate::datamodel::character::*;
+use crate::datamodel::quest::*;
 use crate::datamodel::*;
 
 #[test]
