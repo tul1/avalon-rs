@@ -1,9 +1,13 @@
 pub mod board;
-pub mod character;
+pub mod characters;
 pub mod game;
+pub mod game_manager;
+pub mod game_status;
 pub mod player;
-pub mod quest;
-pub mod turn;
+pub mod player_action_manager;
+pub mod quests;
+pub mod turn_manager;
+pub mod turns;
 
 pub use board::Board;
 pub use game::Game;

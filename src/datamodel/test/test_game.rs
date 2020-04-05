@@ -1,7 +1,8 @@
-use crate::datamodel::character::*;
-use crate::datamodel::quest::*;
+use crate::datamodel::characters::*;
+use crate::datamodel::quests::*;
 use crate::datamodel::test::test_utils::create_3_players;
 use crate::datamodel::*;
+use std::rc::Rc;
 
 #[test]
 fn test_game() {
