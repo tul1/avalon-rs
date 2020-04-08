@@ -1,24 +1,11 @@
 use crate::datamodel::character::*;
 use crate::datamodel::quest::*;
+use crate::datamodel::test::test_utils::create_3_players;
 use crate::datamodel::*;
 
 #[test]
 fn test_game() {
-    let players = vec![
-        Player {
-            name: "jimi".to_string(),
-            character: Box::new(Merlin {}),
-        },
-        Player {
-            name: "volan".to_string(),
-            character: Box::new(Percival {}),
-        },
-        Player {
-            name: "pato".to_string(),
-            character: Box::new(Mordred {}),
-        },
-    ];
-
+    let players = create_3_players();
     let board = Board {
         quest_objectives: vec![
             QuestObjective {
@@ -36,7 +23,7 @@ fn test_game() {
         ],
     };
 
-    let m = Game {
+    let _game = Game {
         num_players: 5,
         players,
         board,

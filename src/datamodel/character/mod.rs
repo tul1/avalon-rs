@@ -16,5 +16,5 @@ pub use {
 
 //Unit tests
 #[cfg(test)]
-#[path = "./test/test_mod.rs"]
+#[path = "test/mod.rs"]
 mod test;

@@ -1,9 +1,8 @@
-use crate::datamodel::quest::quest_member::QuestMember;
 use crate::datamodel::quest::quest_objective::QuestObjective;
-use crate::datamodel::quest::quest_proposer::QuestProposer;
+use crate::datamodel::Player;
 
-pub struct Quest {
-    objective: QuestObjective,
-    proposer: QuestProposer,
-    members: Vec<QuestMember>,
+pub struct Quest<'a> {
+    pub objective: QuestObjective,
+    pub proposer: &'a Player,
+    pub members: Vec<&'a Player>,
 }
