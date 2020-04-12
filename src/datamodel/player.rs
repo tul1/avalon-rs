@@ -1,8 +1,10 @@
-use crate::datamodel::character::Character;
+use crate::datamodel::characters::Character;
+use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct Player {
     pub name: String,
-    pub character: Box<dyn Character>,
+    pub character: Rc<dyn Character>,
 }
 
 impl Player {
