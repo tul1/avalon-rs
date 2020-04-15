@@ -5,7 +5,7 @@ Avalon role game coded in Rust.
 [Game Rules](https://hobbylark.com/card-games/How-to-Play-Avalon)
 
 # Clone, run and test out code
-```
+```bash
 git clone https://github.com/tul1/avalon-rs.git
 cd ./avalon-rs
 cargo build

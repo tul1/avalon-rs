@@ -1,7 +1,9 @@
 [package]
 name = "avalon-rs"
 version = "0.1.0"
-authors = ["patricio tula <tula.patricio@gmail.com>"]
+authors = ["Patricio Tula <tula.patricio@gmail.com>",
+           "Julian Mateu <julianmateu@gmail.com>",
+           "Manuel Aguirre <aguirre.manuel7@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
