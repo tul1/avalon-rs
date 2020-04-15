@@ -3,6 +3,7 @@ pub mod proposal_voter_role_action_manager;
 pub mod quest_member_role_action_manager;
 pub mod quest_proposer_role_action_manager;
 pub mod turn;
+pub mod turn_new;
 pub mod turn_history;
 
 pub use quest_member_role_action_manager::QuestMemberRoleActionManager;
