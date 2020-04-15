@@ -6,9 +6,3 @@ pub struct Player {
     pub name: String,
     pub character: Rc<dyn Character>,
 }
-
-impl Player {
-    pub fn get_name(&self) -> &str {
-        &self.name
-    }
-}
