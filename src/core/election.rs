@@ -1,12 +1,5 @@
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::fmt::Debug;
-
-#[derive(Debug, PartialEq)]
-pub enum Vote2 {
-    Success,
-    Failed,
-}
 
 pub struct Election<T> {
     pub voters: HashMap<String, Option<T>>,
