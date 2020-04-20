@@ -10,15 +10,14 @@ pub enum Vote2 {
 
 pub struct Election<T> {
     pub voters: HashMap<String, Option<T>>,
-    pub winner_threshold: u32,
 }
 
 impl<T> Election<T> {
-    pub fn new(voters: &[String], winner_threshold: u32) -> Election<T> {
+    pub fn new(voters: &[String]) -> Election<T> {
         let voters: HashMap<String, Option<T>> = (*voters).iter()
                                                           .map(|v| (v.clone(), None))
                                                           .collect();
-        Election { voters, winner_threshold, }
+        Election { voters, }
     }
 
     pub fn vote(&mut self, voter: &String, vote: T) {
@@ -45,19 +44,17 @@ impl<T> Election<T> {
                      votes_counter.insert(vote.clone(), 1);
                 }
             }
-            let winner = votes_counter.into_iter()
-                                      .max_by_key(|(_, v)| *v);
-            Ok(Scrutiny { winner: winner.unwrap().0 })
+            Ok(Scrutiny { result: votes_counter, })
         }
     }
 }
 
 pub struct Scrutiny<T> {
-    winner: Option<T>,
+    result: HashMap::<Option<T>, usize>,
 }
 
 impl<T> Scrutiny<T> {
-    pub fn result(&self) -> &Option<T> {
-        &self.winner
+    pub fn result(&self) -> &HashMap::<Option<T>, usize> {
+        &self.result
     }
 }

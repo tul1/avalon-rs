@@ -9,8 +9,7 @@ pub enum Vote2 {
 #[test]
 fn test_election_nominal_scenario() {
     let voters = [String::from("jimi"), String::from("pato"), String::from("volan")];
-    let winner_threshold: u32 = 3;
-    let mut election = Election::<Vote2>::new(&voters, winner_threshold);
+    let mut election = Election::<Vote2>::new(&voters);
     println!("{:?}", election.voters);
     election.vote(&voters[0], Vote2::Success);
     println!("{:?}", election.voters);
