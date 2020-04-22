@@ -44,22 +44,23 @@ fn test_election_no_vote_counting_allow_before_everyone_have_voted() {
 }
 
 #[test]
-fn test_election_ownership_remains_in_current_scope() {
+fn test_election_nominal_case() {
     let electors = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [FakePresidentialElection::Donald,
                  FakePresidentialElection::Alberto,
                  FakePresidentialElection::CoronaBoris];
+    let expected_election = votes.iter()
+                                 .clone()
+                                 .map(|v| (Some(*v), 1))
+                                 .collect();
+
     let mut election = Election::<FakePresidentialElection>::new(&electors);
     for (index, voter) in electors.iter().enumerate() {
         election.vote(&voter, votes[index]);
     }
     let election_result = election.count_votes().ok().unwrap();
-    let espected_election_result = HashMap::<Option<FakePresidentialElection>, usize>::new();
-    assert_eq!(*election_result.result(), espected_election_result);
+    assert_eq!(*election_result.result(), expected_election);
     assert_eq!(electors[0], String::from("jimi"));
     assert_eq!(electors[1], String::from("pato"));
     assert_eq!(electors[2], String::from("volan"));
-    assert_eq!(votes[0], FakePresidentialElection::Donald);
-    assert_eq!(votes[1], FakePresidentialElection::Alberto);
-    assert_eq!(votes[2], FakePresidentialElection::CoronaBoris);
 }
