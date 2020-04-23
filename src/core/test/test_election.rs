@@ -60,7 +60,4 @@ fn test_election_nominal_case() {
     }
     let election_result = election.count_votes().ok().unwrap();
     assert_eq!(*election_result.result(), expected_election);
-    assert_eq!(electors[0], String::from("jimi"));
-    assert_eq!(electors[1], String::from("pato"));
-    assert_eq!(electors[2], String::from("volan"));
 }
