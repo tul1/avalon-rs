@@ -15,11 +15,9 @@ pub struct QuestNew<'a> {
 
 impl<'a> QuestNew<'a> {
     pub fn new(quest_member: &[String], winner_rule: &'a (Vote, usize)) -> QuestNew<'a> {
+        assert!(quest_member.len() >= winner_rule.1, "Winner's rule cannot be bigger than quest member number");
         let election = Election::<Vote>::new(quest_member);
-        QuestNew {
-            election,
-            winner_rule,
-        }
+        QuestNew { election, winner_rule, }
     }
 
     pub fn vote(&mut self, quest_member: &String, vote: Vote) {
