@@ -15,7 +15,7 @@ pub enum FakePresidentialElection {
 #[should_panic(expected = "No electors in this election!")]
 fn test_election_no_election_without_electors() {
     let electors = [];
-    let election = Election::<FakePresidentialElection>::new(&electors);
+    let _election = Election::<FakePresidentialElection>::new(&electors);
 }
 
 #[test]
