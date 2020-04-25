@@ -35,7 +35,7 @@ fn test_quest_fails_on_full_crew_voting_failed_with_full_success_rule() {
 }
 
 #[test]
-fn test_quest_fails_with_full_success_rule() { //failed
+fn test_quest_fails_with_full_success_rule() {
     let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [Vote::Success, Vote::Success, Vote::Failed];
     let winner_rule = (Vote::Success, quest_members.len());
@@ -48,7 +48,7 @@ fn test_quest_fails_with_full_success_rule() { //failed
 }
 
 #[test]
-fn test_quest_fails_with_success_rule() { //failed
+fn test_quest_fails_with_success_rule() {
     let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [Vote::Success, Vote::Failed, Vote::Failed];
     let winner_rule = (Vote::Success, quest_members.len()-1);

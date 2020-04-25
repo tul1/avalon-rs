@@ -26,9 +26,9 @@ impl<'a> QuestNew<'a> {
 
     pub fn finish_quest(self) -> QuestResult {
         let scrutiny = self.election.count_votes().ok().unwrap();
-        match (self.winner_rule.0 , scrutiny.result().get(&Some(self.winner_rule.0))) {
+        match (self.winner_rule.0 , scrutiny.result().get(&Some(self.winner_rule.0))) { 
             (_ , Some(&votes_num)) if votes_num >= self.winner_rule.1 => QuestResult{ quest_result: self.winner_rule.0, },
-            (Vote::Success , _) => QuestResult{ quest_result: Vote::Success, },
+            (Vote::Success , _) => QuestResult{ quest_result: Vote::Failed, },
             (Vote::Failed , _) => QuestResult{ quest_result: Vote::Success, },
         }
     }
