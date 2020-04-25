@@ -22,6 +22,19 @@ fn test_quest_successes_on_full_crew_voting_success_with_full_success_rule() {
 }
 
 #[test]
+fn test_quest_fails_on_full_crew_voting_failed_with_full_success_rule() {
+    let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
+    let votes = [Vote::Failed, Vote::Failed, Vote::Failed];
+    let winner_rule = (Vote::Success, quest_members.len());
+    let mut quest = QuestNew::new(&quest_members, &winner_rule);
+    for (index, voter) in quest_members.iter().enumerate() {
+        quest.vote(&voter, votes[index]);
+    }
+    let quest_result = quest.finish_quest();
+    assert_eq!(*quest_result.result(), Vote::Failed);
+}
+
+#[test]
 fn test_quest_fails_with_full_success_rule() { //failed
     let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [Vote::Success, Vote::Success, Vote::Failed];
@@ -48,23 +61,10 @@ fn test_quest_fails_with_success_rule() { //failed
 }
 
 #[test]
-fn test_quest_successes_with_success_rule() { //failed
+fn test_quest_successes_with_success_rule() {
     let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [Vote::Success, Vote::Success, Vote::Failed];
     let winner_rule = (Vote::Success, quest_members.len()-1);
-    let mut quest = QuestNew::new(&quest_members, &winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest();
-    assert_eq!(*quest_result.result(), Vote::Failed);
-}
-
-#[test]
-fn test_quest_successes_on_full_crew_voting_success_with_failed_rule() {
-    let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
-    let votes = [Vote::Success, Vote::Success, Vote::Success];
-    let winner_rule = (Vote::Failed, 0);
     let mut quest = QuestNew::new(&quest_members, &winner_rule);
     for (index, voter) in quest_members.iter().enumerate() {
         quest.vote(&voter, votes[index]);
@@ -74,10 +74,36 @@ fn test_quest_successes_on_full_crew_voting_success_with_failed_rule() {
 }
 
 #[test]
-fn test_quest_fails_on_full_crew_voting_success_with_failed_rule() {
+fn test_quest_successes_on_full_crew_voting_success_with_failed_rule() {
+    let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
+    let votes = [Vote::Success, Vote::Success, Vote::Success];
+    let winner_rule = (Vote::Failed, 1);
+    let mut quest = QuestNew::new(&quest_members, &winner_rule);
+    for (index, voter) in quest_members.iter().enumerate() {
+        quest.vote(&voter, votes[index]);
+    }
+    let quest_result = quest.finish_quest();
+    assert_eq!(*quest_result.result(), Vote::Success);
+}
+
+#[test]
+fn test_quest_fails_with_failed_rule() {
     let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
     let votes = [Vote::Success, Vote::Failed, Vote::Success];
-    let winner_rule = (Vote::Failed, 0);
+    let winner_rule = (Vote::Failed, 1);
+    let mut quest = QuestNew::new(&quest_members, &winner_rule);
+    for (index, voter) in quest_members.iter().enumerate() {
+        quest.vote(&voter, votes[index]);
+    }
+    let quest_result = quest.finish_quest();
+    assert_eq!(*quest_result.result(), Vote::Failed);
+}
+
+#[test]
+fn test_quest_fails_on_full_crew_voting_failed_with_failed_rule() {
+    let quest_members = [String::from("jimi"), String::from("pato"), String::from("volan")];
+    let votes = [Vote::Failed, Vote::Failed, Vote::Failed];
+    let winner_rule = (Vote::Failed, 1);
     let mut quest = QuestNew::new(&quest_members, &winner_rule);
     for (index, voter) in quest_members.iter().enumerate() {
         quest.vote(&voter, votes[index]);
