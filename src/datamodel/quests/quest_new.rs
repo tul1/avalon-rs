@@ -8,14 +8,19 @@ pub enum Vote {
     Failed,
 }
 
+pub struct WinnerRule {
+    cantidate: Vote,
+    electoral_cutoff: usize,
+}
+
 pub struct QuestNew<'a> {
     election: Election<Vote>,
-    winner_rule: &'a (Vote, usize),
+    winner_rule: &'a WinnerRule,
 }
 
 impl<'a> QuestNew<'a> {
-    pub fn new(quest_member: &[String], winner_rule: &'a (Vote, usize)) -> QuestNew<'a> {
-        assert!(quest_member.len() >= winner_rule.1, "Winner's rule cannot be bigger than quest member number");
+    pub fn new(quest_member: &[String], winner_rule: &'a WinnerRule) -> QuestNew<'a> {
+        assert!(quest_member.len() >= winner_rule.electoral_cutoff, "Winner's rule cannot be bigger than quest member number");
         let election = Election::<Vote>::new(quest_member);
         QuestNew { election, winner_rule, }
     }
@@ -24,13 +29,18 @@ impl<'a> QuestNew<'a> {
         self.election.vote(quest_member, vote);
     }
 
-    pub fn finish_quest(self) -> QuestResult {
-        let scrutiny = self.election.count_votes().ok().unwrap();
-        match (self.winner_rule.0 , scrutiny.result().get(&Some(self.winner_rule.0))) { 
-            (_ , Some(&votes_num)) if votes_num >= self.winner_rule.1 => QuestResult{ quest_result: self.winner_rule.0, },
-            (Vote::Success , _) => QuestResult{ quest_result: Vote::Failed, },
-            (Vote::Failed , _) => QuestResult{ quest_result: Vote::Success, },
-        }
+    pub fn finish_quest(self) -> Result<QuestResult, QuestNew<'a>> {
+        let scrutiny = match self.election.count_votes() {
+            Ok(s) => s,
+            Err(_) => return Err(self),
+        };
+        let scrutiny = scrutiny.result();
+        let quest_result = match (self.winner_rule.cantidate , scrutiny.get(&Some(self.winner_rule.cantidate))) { 
+            (_ , Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => self.winner_rule.cantidate,
+            (Vote::Success , _) => Vote::Failed,
+            (Vote::Failed , _) => Vote::Success,
+        };
+        Ok(QuestResult{ quest_result, })
     }
 }
 
