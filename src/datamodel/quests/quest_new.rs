@@ -10,8 +10,8 @@ pub enum Vote {
 
 #[derive(Clone)]
 pub struct WinnerRule {
-    cantidate: Vote,
-    electoral_cutoff: usize,
+    pub candidate: Vote,
+    pub electoral_cutoff: usize,
 }
 
 pub struct QuestNew {
@@ -38,8 +38,8 @@ impl QuestNew {
                         winner_rule: self.winner_rule.clone(), }),
         };
         let scrutiny = scrutiny.result();
-        let quest_result = match (self.winner_rule.cantidate , scrutiny.get(&Some(self.winner_rule.cantidate))) { 
-            (_ , Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => self.winner_rule.cantidate,
+        let quest_result = match (self.winner_rule.candidate , scrutiny.get(&Some(self.winner_rule.candidate))) { 
+            (_ , Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => self.winner_rule.candidate,
             (Vote::Success , _) => Vote::Failed,
             (Vote::Failed , _) => Vote::Success,
         };
