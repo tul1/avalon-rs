@@ -14,3 +14,8 @@ RUN set -eux; \
     rustup --version; \
     cargo --version; \
     rustc --version;
+
+WORKDIR /home/
+RUN mkdir avalon-rs 
+COPY . avalon-rs/
+RUN cargo build 

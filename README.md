@@ -11,3 +11,12 @@ cd ./avalon-rs
 cargo build
 cargo test
 ```
+
+# Use our Avalon Docker
+In case you don't want to install all the dependencies in your local machine you can run our project inside a Docker. With the commands beneath you'll be able to launch a Docker container and run try avalon-rs locally. 
+
+```bash
+docker build -t avalon-rs:latest .
+docker run -it --rm avalon-rs bash
+cd avalon-rs
+```
