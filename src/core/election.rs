@@ -55,14 +55,13 @@ pub struct Election<T> {
 
 impl<T> Election<T> {
     pub fn new(electors: &[String]) -> Election<T> {
-        assert!(electors.len() > 0, "No electors in this election!");
-        let electors_votes: HashMap<String, Option<T>> = (*electors).iter()
-                                                          .map(|v| (v.clone(), None))
-                                                          .collect();
-        Election { electors_votes, }
+        assert!(!electors.is_empty(), "No electors in this election!");
+        let electors_votes: HashMap<String, Option<T>> =
+            (*electors).iter().map(|v| (v.clone(), None)).collect();
+        Election { electors_votes }
     }
 
-    pub fn vote(&mut self, elector: &String, vote: T) {
+    pub fn vote(&mut self, elector: &str, vote: T) {
         if let Some(elector) = self.electors_votes.get_mut(elector) {
             elector.get_or_insert(vote);
         } else {
@@ -70,13 +69,15 @@ impl<T> Election<T> {
         }
     }
 
-    pub fn count_votes(self) -> Result<Scrutiny<T>, Election<T>> 
-    where T: 
-        Eq + Hash + Clone,
+    pub fn count_votes(self) -> Result<Scrutiny<T>, Election<T>>
+    where
+        T: Eq + Hash + Clone,
     {
-        let elector_not_having_voted = self.electors_votes.values()
-                                                          .filter(|v| !v.is_some())
-                                                          .count();
+        let elector_not_having_voted = self
+            .electors_votes
+            .values()
+            .filter(|v| !v.is_some())
+            .count();
         if elector_not_having_voted > 0 {
             Err(self)
         } else {
@@ -88,17 +89,19 @@ impl<T> Election<T> {
                     votes_counter.insert(vote.clone(), 1);
                 }
             }
-            Ok(Scrutiny { result: votes_counter, })
+            Ok(Scrutiny {
+                result: votes_counter,
+            })
         }
     }
 }
 
 pub struct Scrutiny<T> {
-    result: HashMap::<Option<T>, usize>,
+    result: HashMap<Option<T>, usize>,
 }
 
 impl<T> Scrutiny<T> {
-    pub fn result(&self) -> &HashMap::<Option<T>, usize> {
+    pub fn result(&self) -> &HashMap<Option<T>, usize> {
         &self.result
     }
 }

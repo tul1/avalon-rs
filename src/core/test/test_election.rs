@@ -33,26 +33,36 @@ fn test_election_elector_cannot_change_vote() {
     let mut election = Election::<FakePresidentialElection>::new(&electors);
     election.vote(&electors[0], FakePresidentialElection::CoronaBoris);
     election.vote(&electors[0], FakePresidentialElection::Emmanuel);
-    assert_eq!(election.electors_votes[&electors[0]], Some(FakePresidentialElection::CoronaBoris));
+    assert_eq!(
+        election.electors_votes[&electors[0]],
+        Some(FakePresidentialElection::CoronaBoris)
+    );
 }
 
 #[test]
 fn test_election_no_vote_counting_allow_before_everyone_have_voted() {
-    let electors = [String::from("jimi"), String::from("pato"), String::from("volan")];
+    let electors = [
+        String::from("jimi"),
+        String::from("pato"),
+        String::from("volan"),
+    ];
     let mut election = Election::<FakePresidentialElection>::new(&electors);
     assert!(election.count_votes().is_err());
 }
 
 #[test]
 fn test_election_nominal_case() {
-    let electors = [String::from("jimi"), String::from("pato"), String::from("volan")];
-    let votes = [FakePresidentialElection::Donald,
-                 FakePresidentialElection::Alberto,
-                 FakePresidentialElection::CoronaBoris];
-    let expected_election = votes.iter()
-                                 .clone()
-                                 .map(|v| (Some(*v), 1))
-                                 .collect();
+    let electors = [
+        String::from("jimi"),
+        String::from("pato"),
+        String::from("volan"),
+    ];
+    let votes = [
+        FakePresidentialElection::Donald,
+        FakePresidentialElection::Alberto,
+        FakePresidentialElection::CoronaBoris,
+    ];
+    let expected_election = votes.iter().clone().map(|v| (Some(*v), 1)).collect();
 
     let mut election = Election::<FakePresidentialElection>::new(&electors);
     for (index, voter) in electors.iter().enumerate() {
