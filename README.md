@@ -20,3 +20,9 @@ docker build -t avalon-rs:latest .
 docker run -it --rm avalon-rs bash
 cd avalon-rs
 ```
+
+A public image is also available in dockerhub, you just have to run this command to get it.
+
+```bash
+docker pull tul1/avalon-rs:latest
+```
