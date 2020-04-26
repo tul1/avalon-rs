@@ -48,7 +48,7 @@ use std::hash::Hash;
 ///     let election_result = election.count_votes().ok().unwrap();
 ///     println!("{:?}", election_result.result());
 ///     ```
-#[derive(Copy)]
+#[derive(Clone)]
 pub struct Election<T> {
     pub electors_votes: HashMap<String, Option<T>>,
 }

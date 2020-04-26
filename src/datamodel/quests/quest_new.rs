@@ -8,31 +8,34 @@ pub enum Vote {
     Failed,
 }
 
+#[derive(Clone)]
 pub struct WinnerRule {
     cantidate: Vote,
     electoral_cutoff: usize,
 }
 
-pub struct QuestNew<'a> {
-    election: Election<Vote>,
-    winner_rule: &'a WinnerRule,
+pub struct QuestNew {
+    pub election: Election<Vote>,
+    pub winner_rule: WinnerRule,
 }
 
-impl<'a> QuestNew<'a> {
-    pub fn new(quest_member: &[String], winner_rule: &'a WinnerRule) -> QuestNew<'a> {
+impl QuestNew {
+    pub fn new(quest_member: &[String], winner_rule: &WinnerRule) -> QuestNew {
         assert!(quest_member.len() >= winner_rule.electoral_cutoff, "Winner's rule cannot be bigger than quest member number");
         let election = Election::<Vote>::new(quest_member);
-        QuestNew { election, winner_rule, }
+        QuestNew { election, winner_rule: winner_rule.clone(), }
     }
 
     pub fn vote(&mut self, quest_member: &String, vote: Vote) {
         self.election.vote(quest_member, vote);
     }
 
-    pub fn finish_quest(self) -> Result<QuestResult, QuestNew<'a>> {
+    pub fn finish_quest(self) -> Result<QuestResult, QuestNew> {
         let scrutiny = match self.election.count_votes() {
             Ok(s) => s,
-            Err(_) => return Err(self),
+            Err(e) => return Err(QuestNew { 
+                        election: e.clone(), 
+                        winner_rule: self.winner_rule.clone(), }),
         };
         let scrutiny = scrutiny.result();
         let quest_result = match (self.winner_rule.cantidate , scrutiny.get(&Some(self.winner_rule.cantidate))) { 
