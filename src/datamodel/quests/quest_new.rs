@@ -21,29 +21,43 @@ pub struct QuestNew {
 
 impl QuestNew {
     pub fn new(quest_member: &[String], winner_rule: &WinnerRule) -> QuestNew {
-        assert!(quest_member.len() >= winner_rule.electoral_cutoff, "Winner's rule cannot be bigger than quest member number");
+        assert!(
+            quest_member.len() >= winner_rule.electoral_cutoff,
+            "Winner's rule cannot be bigger than quest member number"
+        );
         let election = Election::<Vote>::new(quest_member);
-        QuestNew { election, winner_rule: winner_rule.clone(), }
+        QuestNew {
+            election,
+            winner_rule: winner_rule.clone(),
+        }
     }
 
-    pub fn vote(&mut self, quest_member: &String, vote: Vote) {
+    pub fn vote(&mut self, quest_member: &str, vote: Vote) {
         self.election.vote(quest_member, vote);
     }
 
     pub fn finish_quest(self) -> Result<QuestResult, QuestNew> {
         let scrutiny = match self.election.count_votes() {
             Ok(s) => s,
-            Err(e) => return Err(QuestNew { 
-                        election: e.clone(), 
-                        winner_rule: self.winner_rule.clone(), }),
+            Err(e) => {
+                return Err(QuestNew {
+                    election: e,
+                    winner_rule: self.winner_rule,
+                })
+            }
         };
         let scrutiny = scrutiny.result();
-        let quest_result = match (self.winner_rule.candidate , scrutiny.get(&Some(self.winner_rule.candidate))) { 
-            (_ , Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => self.winner_rule.candidate,
-            (Vote::Success , _) => Vote::Failed,
-            (Vote::Failed , _) => Vote::Success,
+        let quest_result = match (
+            self.winner_rule.candidate,
+            scrutiny.get(&Some(self.winner_rule.candidate)),
+        ) {
+            (_, Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => {
+                self.winner_rule.candidate
+            }
+            (Vote::Success, _) => Vote::Failed,
+            (Vote::Failed, _) => Vote::Success,
         };
-        Ok(QuestResult{ quest_result, })
+        Ok(QuestResult { quest_result })
     }
 }
 
