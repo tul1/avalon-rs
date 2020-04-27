@@ -78,7 +78,7 @@ impl<T> Election<T> {
             .values()
             .filter(|v| !v.is_some())
             .count();
-        if elector_not_having_voted > 0 {
+        if electors_not_having_voted > 0 {
             Err(self)
         } else {
             let mut votes_counter = HashMap::<Option<T>, usize>::new();
