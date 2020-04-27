@@ -27,9 +27,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                // TODO uncomment once cargo test passes. 
-                // sh "cargo test"
-                sh "echo coming soon"
+                sh "cargo test"
             }
         }
         stage('Documentation') {
