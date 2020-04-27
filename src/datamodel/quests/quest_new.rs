@@ -11,7 +11,7 @@ pub enum Vote {
 #[derive(Clone)]
 pub struct WinnerRule {
     pub candidate: Vote,
-    pub electoral_cutoff: usize,
+    pub required_votes: usize,
 }
 
 pub struct QuestNew {
@@ -20,15 +20,15 @@ pub struct QuestNew {
 }
 
 impl QuestNew {
-    pub fn new(quest_member: &[String], winner_rule: &WinnerRule) -> QuestNew {
+    pub fn new(quest_member: &[String], winner_rule: WinnerRule) -> QuestNew {
         assert!(
-            quest_member.len() >= winner_rule.electoral_cutoff,
+            quest_member.len() >= winner_rule.required_votes,
             "Winner's rule cannot be bigger than quest member number"
         );
         let election = Election::<Vote>::new(quest_member);
         QuestNew {
             election,
-            winner_rule: winner_rule.clone(),
+            winner_rule: winner_rule,
         }
     }
 
@@ -47,13 +47,10 @@ impl QuestNew {
             }
         };
         let scrutiny = scrutiny.result();
-        let quest_result = match (
-            self.winner_rule.candidate,
-            scrutiny.get(&Some(self.winner_rule.candidate)),
-        ) {
-            (_, Some(&votes_num)) if votes_num >= self.winner_rule.electoral_cutoff => {
-                self.winner_rule.candidate
-            }
+        let candidate = self.winner_rule.candidate;
+        let election_result = scrutiny.get(&Some(candidate));
+        let quest_result = match (candidate, election_result) {
+            (_, Some(&votes_count)) if votes_count >= self.winner_rule.required_votes => { candidate }
             (Vote::Success, _) => Vote::Failed,
             (Vote::Failed, _) => Vote::Success,
         };
