@@ -50,7 +50,7 @@ impl QuestNew {
         let candidate = self.winner_rule.candidate;
         let election_result = scrutiny.get(&Some(candidate));
         let quest_result = match (candidate, election_result) {
-            (_, Some(&votes_count)) if votes_count >= self.winner_rule.required_votes => { candidate }
+            (_, Some(&votes_count)) if votes_count >= self.winner_rule.required_votes => candidate,
             (Vote::Success, _) => Vote::Failed,
             (Vote::Failed, _) => Vote::Success,
         };

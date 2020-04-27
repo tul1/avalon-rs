@@ -1,6 +1,29 @@
 use crate::datamodel::quests::quest_new::*;
 
 #[test]
+fn test_quest_no_finished_quest_before_everyone_have_voted() {
+    let quest_members = [
+        String::from("jimi"),
+        String::from("pato"),
+        String::from("volan"),
+    ];
+    let winner_rule = WinnerRule {
+        candidate: Vote::Success,
+        required_votes: quest_members.len(),
+    };
+    let mut quest = QuestNew::new(&quest_members, winner_rule);
+    quest.vote(&quest_members[0], Vote::Success);
+    let quest_result = quest.finish_quest();
+    assert!(quest_result.is_err());
+
+    let mut quest = quest_result.err().unwrap();
+    quest.vote(&quest_members[1], Vote::Success);
+    quest.vote(&quest_members[2], Vote::Success);
+    let quest_result = quest.finish_quest();
+    assert!(quest_result.is_ok());
+}
+
+#[test]
 #[should_panic(expected = "Winner's rule cannot be bigger than quest member number")]
 fn test_quest_panics_on_winner_rule_bigger_than_quest_member_num() {
     let quest_members = [

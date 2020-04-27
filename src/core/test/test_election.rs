@@ -40,14 +40,21 @@ fn test_election_elector_cannot_change_vote() {
 }
 
 #[test]
-fn test_election_no_vote_counting_allow_before_everyone_have_voted() {
+fn test_election_no_vote_counting_allowed_before_everyone_have_voted() {
     let electors = [
         String::from("jimi"),
         String::from("pato"),
         String::from("volan"),
     ];
     let mut election = Election::<FakePresidentialElection>::new(&electors);
-    assert!(election.count_votes().is_err());
+    election.vote(&electors[0], FakePresidentialElection::Emmanuel);
+    let election_vote_count = election.count_votes();
+    assert!(election_vote_count.is_err());
+
+    let mut election = election_vote_count.err().unwrap();
+    election.vote(&electors[1], FakePresidentialElection::Donald);
+    election.vote(&electors[2], FakePresidentialElection::Alberto);
+    assert!(election.count_votes().is_ok());
 }
 
 #[test]
