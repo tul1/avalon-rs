@@ -1,29 +1,59 @@
-node {
-    def commit_id;
-    def RUST = '$HOME/.cargo/bin/';
-    def RUST_TESTING_FLAGS ='RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads" CARGO_INCREMENTAL=0';
-    stage('Preparation') {
-        checkout scm
-        sh "git rev-parse --short HEAD > .git/commit-id"
-        commit_id = readFile('.git/commit-id').trim()
-        sh "${RUST}cargo --version"
+pipeline {
+    agent { 
+         docker { image 'rust' }
     }
-    stage('Build') {
-        sh "${RUST}cargo build"
-    }
-    stage('Unit tests') {
-        sh "${RUST_TESTING_FLAGS} ${RUST}cargo test --lib"
-    }
-    stage('Integration tests') {
-        sh "${RUST_TESTING_FLAGS} ${RUST}cargo test --test integration_tests"
-    }
-    if(env.BRANCH_NAME == 'master') {
-        stage('Publish crate') {
-            sh "echo publish"
-            // sh "cargo publish"
+    stages {
+        stage('Rustfmt') {
+            steps {
+                // This step isn't currently available because
+                // cargo fmt is not passing due to some technical
+                // dept we've gathered.
+                // TODO uncomment once cargo fmt passes. 
+                // sh "cargo fmt -- --check"
+                sh "echo coming soon"
+            }
         }
-    }
-    stage('Clean up') {
-        sh "rm -r ./target"
+        stage('Clippy') {
+            steps {
+                // TODO uncomment once cargo clippy passes. 
+                // sh "cargo clippy"
+                sh "echo coming soon"
+            }
+        }
+        stage('Build') {
+            steps {
+                sh "cargo build"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh "cargo test"
+            }
+        }
+        stage('Documentation') {
+            steps {
+                sh "cargo doc"
+            }
+        }
+        stage('Publish new version') {
+            when {
+                expression { scm.branches[0].name == 'stable' }
+            }
+            steps {
+                withCredentials([string(credentialsId: 'cargo_io_credential', variable: 'CARGO_IO_CREDENTIAL')]) {
+                    // TODO uncomment cargo publish once we feel ready to officially deploy
+                    // to crate.io by the first time. (Cargo credential is already set up).
+                    sh '''
+                        cargo login $CARGO_IO_CREDENTIAL
+                        #cargo publish
+                    '''
+                }
+            }
+        }
+        stage('Clean up') {
+            steps {
+               sh "cargo clean"
+            }
+        }
     }
 }
