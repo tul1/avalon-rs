@@ -1,6 +1,6 @@
 pipeline {
     agent { 
-         docker { image 'tul1/avalon-rs:latest' }
+         docker { image 'rust:stretch' }
     }
     stages {
         stage('Rustfmt') {
