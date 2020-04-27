@@ -1,6 +1,6 @@
 pipeline {
     agent { 
-         docker { image 'rust:stretch' }
+         docker { image 'rust' }
     }
     stages {
         stage('Rustfmt') {
