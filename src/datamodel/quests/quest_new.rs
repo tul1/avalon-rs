@@ -1,64 +1,69 @@
-use std::collections::HashMap;
-use std::rc::Rc;
+use std::hash::Hash;
 
-#[derive(Debug, PartialEq)]
+use crate::core::election::Election;
+
+#[derive(Hash, PartialEq, Eq, Clone, Debug, Copy)]
 pub enum Vote {
     Success,
     Failed,
 }
 
-pub struct QuestObjective {
-    pub num_players: u32,
-    pub required_successes: u32,
+#[derive(Clone)]
+pub struct WinnerRule {
+    pub candidate: Vote,
+    pub required_votes: usize,
 }
 
 pub struct QuestNew {
-    members: HashMap<&'static str, bool>,
-    objective: Rc<QuestObjective>,
-    success_votes: u32,
+    pub election: Election<Vote>,
+    pub winner_rule: WinnerRule,
 }
 
 impl QuestNew {
-    pub fn new(members: Vec<&'static str>, objective: Rc<QuestObjective>) -> QuestNew {
-        let members: HashMap<&'static str, bool> =
-            members.into_iter().map(|m| (m, false)).collect();
+    pub fn new(quest_member: &[String], winner_rule: WinnerRule) -> QuestNew {
+        assert!(
+            quest_member.len() >= winner_rule.required_votes,
+            "Winner's rule cannot be bigger than quest member number"
+        );
+        let election = Election::<Vote>::new(quest_member);
         QuestNew {
-            objective,
-            members,
-            success_votes: 0,
+            election,
+            winner_rule: winner_rule,
         }
     }
 
-    pub fn add_vote(&mut self, player: &str, vote: Vote) {
-        if self.members[player] == true {
-            return;
-        }
-        if vote == Vote::Success {
-            self.success_votes += 1;
-        }
-        *self.members.get_mut(player).unwrap() = true;
+    pub fn vote(&mut self, quest_member: &str, vote: Vote) {
+        self.election.vote(quest_member, vote);
     }
 
-    pub fn finish_quest(self) -> Result<FinishedQuestNew, QuestNew> {
-        let unvoted: Vec<bool> = self.members.iter().map(|m| *m.1).filter(|v| !*v).collect();
-        if unvoted.len() > 0 {
-            Err(self)
-        } else {
-            if self.success_votes == self.objective.required_successes {
-                Ok(FinishedQuestNew { success: true })
-            } else {
-                Ok(FinishedQuestNew { success: false })
+    pub fn finish_quest(self) -> Result<QuestResult, QuestNew> {
+        let scrutiny = match self.election.count_votes() {
+            Ok(s) => s,
+            Err(e) => {
+                return Err(QuestNew {
+                    election: e,
+                    winner_rule: self.winner_rule,
+                })
             }
-        }
+        };
+        let scrutiny = scrutiny.result();
+        let candidate = self.winner_rule.candidate;
+        let election_result = scrutiny.get(&Some(candidate));
+        let quest_result = match (candidate, election_result) {
+            (_, Some(&votes_count)) if votes_count >= self.winner_rule.required_votes => candidate,
+            (Vote::Success, _) => Vote::Failed,
+            (Vote::Failed, _) => Vote::Success,
+        };
+        Ok(QuestResult { quest_result })
     }
 }
 
-pub struct FinishedQuestNew {
-    success: bool,
+pub struct QuestResult {
+    quest_result: Vote,
 }
 
-impl FinishedQuestNew {
-    pub fn result(&self) -> bool {
-        self.success
+impl QuestResult {
+    pub fn result(&self) -> &Vote {
+        &self.quest_result
     }
 }
