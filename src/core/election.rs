@@ -73,7 +73,7 @@ impl<T> Election<T> {
     where
         T: Eq + Hash + Clone,
     {
-        let elector_not_having_voted = self
+        let electors_not_having_voted = self
             .electors_votes
             .values()
             .filter(|v| !v.is_some())
