@@ -1,6 +1,7 @@
 use std::hash::Hash;
 
 use crate::core::election::Election;
+use crate::datamodel::quests::winner_rule::WinnerRule;
 
 #[derive(Hash, PartialEq, Eq, Clone, Debug, Copy)]
 pub enum Vote {
@@ -8,19 +9,13 @@ pub enum Vote {
     Failed,
 }
 
-#[derive(Clone)]
-pub struct WinnerRule {
-    pub candidate: Vote,
-    pub required_votes: usize,
-}
-
 pub struct QuestNew {
     pub election: Election<Vote>,
-    pub winner_rule: WinnerRule,
+    pub winner_rule: WinnerRule<Vote>,
 }
 
 impl QuestNew {
-    pub fn new(quest_member: &[String], winner_rule: WinnerRule) -> QuestNew {
+    pub fn new(quest_member: &[String], winner_rule: WinnerRule<Vote>) -> QuestNew {
         assert!(
             quest_member.len() >= winner_rule.required_votes,
             "Winner's rule cannot be bigger than quest member number"

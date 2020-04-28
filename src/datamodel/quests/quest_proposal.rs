@@ -1,49 +1,66 @@
-use std::collections::HashMap;
+use std::hash::Hash;
+
+use crate::core::election::Election;
+use crate::datamodel::quests::winner_rule::WinnerRule;
+
+#[derive(Hash, PartialEq, Eq, Clone, Debug, Copy)]
+pub enum ProposalVote {
+    InFavor,
+    Against,
+}
 
 pub struct QuestProposal {
-    players: HashMap<&'static str, bool>,
-    positive_votes: u32,
+    pub election: Election<ProposalVote>,
+    pub winner_rule: WinnerRule<ProposalVote>,
 }
 
 impl QuestProposal {
-    pub fn new(players: Vec<&'static str>) -> QuestProposal {
-        let players: HashMap<&'static str, bool> =
-            players.into_iter().map(|m| (m, false)).collect();
+    pub fn new(players: &[String]) -> QuestProposal {
+        let winner_rule = WinnerRule {
+            candidate: ProposalVote::InFavor,
+            required_votes: players.len() / 2,
+        };
+        let election = Election::<ProposalVote>::new(players);
         QuestProposal {
-            players,
-            positive_votes: 0,
+            election,
+            winner_rule,
         }
     }
 
-    pub fn add_vote(&mut self, player: &str, vote: bool) {
-        if !self.players[player] {
-            if vote {
-                self.positive_votes += 1;
-            }
-            *self.players.get_mut(player).unwrap() = true;
-        }
+    pub fn vote(&mut self, player: &str, vote: ProposalVote) {
+        self.election.vote(player, vote);
     }
 
-    pub fn finish_quest_proposal(self) -> Result<FinishQuestProposal, QuestProposal> {
-        let unvoted: Vec<bool> = self.players.iter().map(|m| *m.1).filter(|v| !*v).collect();
-        if unvoted.len() > 0 {
-            Err(self)
-        } else {
-            if self.positive_votes > (self.players.len() as u32 / 2) {
-                Ok(FinishQuestProposal { success: true })
-            } else {
-                Ok(FinishQuestProposal { success: false })
+    pub fn finish_quest_proposal(self) -> Result<QuestProposalResult, QuestProposal> {
+        let scrutiny = match self.election.count_votes() {
+            Ok(s) => s,
+            Err(e) => {
+                return Err(QuestProposal {
+                    election: e,
+                    winner_rule: self.winner_rule,
+                })
             }
-        }
+        };
+        let scrutiny = scrutiny.result();
+        let candidate = self.winner_rule.candidate;
+        let election_result = scrutiny.get(&Some(candidate));
+        let quest_proposal_result = match (candidate, election_result) {
+            (_, Some(&votes_count)) if votes_count >= self.winner_rule.required_votes => candidate,
+            (ProposalVote::InFavor, _) => ProposalVote::Against,
+            (ProposalVote::Against, _) => ProposalVote::InFavor,
+        };
+        Ok(QuestProposalResult {
+            quest_proposal_result,
+        })
     }
 }
 
-pub struct FinishQuestProposal {
-    success: bool,
+pub struct QuestProposalResult {
+    quest_proposal_result: ProposalVote,
 }
 
-impl FinishQuestProposal {
-    pub fn result(&self) -> bool {
-        self.success
+impl QuestProposalResult {
+    pub fn result(&self) -> &ProposalVote {
+        &self.quest_proposal_result
     }
 }

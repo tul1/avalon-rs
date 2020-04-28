@@ -1,7 +1,8 @@
 use crate::datamodel::quests::quest_new::*;
+use crate::datamodel::quests::winner_rule::WinnerRule;
 
 #[test]
-fn test_quest_no_finished_quest_before_everyone_have_voted() {
+fn test_quest_not_finished_before_everyone_have_voted() {
     let quest_members = [
         String::from("jimi"),
         String::from("pato"),
