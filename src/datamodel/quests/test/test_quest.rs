@@ -2,6 +2,30 @@ use crate::datamodel::quests::quest_new::*;
 use crate::datamodel::quests::winner_rule::WinnerRule;
 
 #[test]
+#[should_panic(expected = "No electors in this election!")]
+fn test_quest_no_quest_without_quest_members() {
+    let quest_members = [];
+    let winner_rule = WinnerRule {
+        candidate: Vote::Success,
+        required_votes: quest_members.len(),
+    };
+    let mut quest = QuestNew::new(&quest_members, winner_rule);
+}
+
+#[test]
+#[should_panic(expected = "Elector doesn't exist!")]
+fn test_quest_quest_member_must_be_resgistered() {
+    let quest_members = [String::from("jimi")];
+    let winner_rule = WinnerRule {
+        candidate: Vote::Success,
+        required_votes: quest_members.len(),
+    };
+    let mut quest = QuestNew::new(&quest_members, winner_rule);
+    let fake_quest_members = String::from("jimbo");
+    quest.vote(&fake_quest_members, Vote::Success);
+}
+
+#[test]
 fn test_quest_not_finished_before_everyone_have_voted() {
     let quest_members = [
         String::from("jimi"),

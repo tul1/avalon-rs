@@ -18,7 +18,7 @@ impl QuestProposal {
     pub fn new(players: &[String]) -> QuestProposal {
         let winner_rule = WinnerRule {
             candidate: ProposalVote::InFavor,
-            required_votes: players.len() / 2,
+            required_votes: players.len() / 2 + 1,
         };
         let election = Election::<ProposalVote>::new(players);
         QuestProposal {

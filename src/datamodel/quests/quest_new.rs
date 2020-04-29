@@ -23,7 +23,7 @@ impl QuestNew {
         let election = Election::<Vote>::new(quest_member);
         QuestNew {
             election,
-            winner_rule: winner_rule,
+            winner_rule,
         }
     }
 

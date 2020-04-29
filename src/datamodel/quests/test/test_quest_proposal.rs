@@ -2,6 +2,22 @@ use crate::datamodel::quests::quest_proposal::*;
 use crate::datamodel::quests::winner_rule::WinnerRule;
 
 #[test]
+#[should_panic(expected = "No electors in this election!")]
+fn test_quest_propasal_no_quest_propasal_without_players() {
+    let players = [];
+    let mut quest_proposal = QuestProposal::new(&players);
+}
+
+#[test]
+#[should_panic(expected = "Elector doesn't exist!")]
+fn test_quest_propasal_voter_must_be_resgistered() {
+    let players = [String::from("jimi")];
+    let mut quest_proposal = QuestProposal::new(&players);
+    let fake_player = String::from("jimbo");
+    quest_proposal.vote(&fake_player, ProposalVote::InFavor);
+}
+
+#[test]
 fn test_quest_propasal_not_finished_before_everyone_have_voted() {
     let players = [
         String::from("jimi"),
@@ -27,153 +43,89 @@ fn test_quest_propasal_successes_on_full_crew_voting_in_favor() {
         String::from("pato"),
         String::from("volan"),
         String::from("juancito"),
-        ];
-    let votes = [ProposalVote::InFavor, ProposalVote::InFavor, ProposalVote::InFavor, ProposalVote::InFavor];
-    let mut quest_proposal = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
+    ];
+    let mut quest_proposal = QuestProposal::new(&players);
+    for player in &players {
+        quest_proposal.vote(&player, ProposalVote::InFavor);
     }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Success);
+    let quest_proposal_result = quest_proposal.finish_quest_proposal().ok().unwrap();
+    assert_eq!(*quest_proposal_result.result(), ProposalVote::InFavor);
 }
 
 #[test]
-fn test_quest_propasal_fails_on_full_crew_voting_failed() {
-    let quest_members = [
+fn test_quest_propasal_fails_on_full_crew_voting_against() {
+    let players = [
+        String::from("jimi"),
+        String::from("pato"),
+        String::from("volan"),
+        String::from("juancito"),
+    ];
+    let mut quest_proposal = QuestProposal::new(&players);
+    for player in &players {
+        quest_proposal.vote(&player, ProposalVote::Against);
+    }
+    let quest_proposal_result = quest_proposal.finish_quest_proposal().ok().unwrap();
+    assert_eq!(*quest_proposal_result.result(), ProposalVote::Against);
+}
+
+#[test]
+fn test_quest_propasal_fails_without_simple_majority_in_favor_on_even_players_number() {
+    let players = [
+        String::from("jimi"),
+        String::from("pato"),
+        String::from("volan"),
+        String::from("juancito"),
+    ];
+    let votes = [
+        ProposalVote::Against,
+        ProposalVote::Against,
+        ProposalVote::InFavor,
+        ProposalVote::InFavor,
+    ];
+    let mut quest_proposal = QuestProposal::new(&players);
+    for (index, player) in players.iter().enumerate() {
+        quest_proposal.vote(&player, votes[index]);
+    }
+    let quest_proposal_result = quest_proposal.finish_quest_proposal().ok().unwrap();
+    assert_eq!(*quest_proposal_result.result(), ProposalVote::Against);
+}
+
+#[test]
+fn test_quest_propasal_fails_without_simple_majority_in_favor_on_odd_players_number() {
+    let players = [
         String::from("jimi"),
         String::from("pato"),
         String::from("volan"),
     ];
-    let votes = [Vote::Failed, Vote::Failed, Vote::Failed];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Success,
-        required_votes: quest_members.len(),
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
+    let votes = [
+        ProposalVote::Against,
+        ProposalVote::Against,
+        ProposalVote::InFavor,
+    ];
+    let mut quest_proposal = QuestProposal::new(&players);
+    for (index, player) in players.iter().enumerate() {
+        quest_proposal.vote(&player, votes[index]);
     }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Failed);
+    let quest_proposal_result = quest_proposal.finish_quest_proposal().ok().unwrap();
+    assert_eq!(*quest_proposal_result.result(), ProposalVote::Against);
 }
 
 #[test]
-fn test_quest_propasal_fails_without_simple_majority_against() {
-    let quest_members = [
+fn test_quest_propasal_successes_without_simple_majority_against_on_odd_players_number() {
+    let players = [
         String::from("jimi"),
         String::from("pato"),
         String::from("volan"),
     ];
-    let votes = [Vote::Success, Vote::Success, Vote::Failed];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Success,
-        required_votes: quest_members.len(),
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Failed);
-}
-
-#[test]
-fn test_quest_propasal_successes_with_success_rule() {
-    let quest_members = [
-        String::from("jimi"),
-        String::from("pato"),
-        String::from("volan"),
+    let votes = [
+        ProposalVote::Against,
+        ProposalVote::InFavor,
+        ProposalVote::InFavor,
     ];
-    let votes = [Vote::Success, Vote::Failed, Vote::Failed];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Success,
-        required_votes: quest_members.len() - 1,
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
+    let mut quest_proposal = QuestProposal::new(&players);
+    for (index, player) in players.iter().enumerate() {
+        quest_proposal.vote(&player, votes[index]);
     }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Failed);
-}
-
-#[test]
-fn test_quest_propasal_successes_with_success_rule() {
-    let quest_members = [
-        String::from("jimi"),
-        String::from("pato"),
-        String::from("volan"),
-    ];
-    let votes = [Vote::Success, Vote::Success, Vote::Failed];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Success,
-        required_votes: quest_members.len() - 1,
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Success);
-}
-
-#[test]
-fn test_quest_successes_on_full_crew_voting_success_with_failed_rule() {
-    let quest_members = [
-        String::from("jimi"),
-        String::from("pato"),
-        String::from("volan"),
-    ];
-    let votes = [Vote::Success, Vote::Success, Vote::Success];
-    let winner_rule = (Vote::Failed, 1);
-    let winner_rule = WinnerRule {
-        candidate: Vote::Failed,
-        required_votes: 1,
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Success);
-}
-
-#[test]
-fn test_quest_fails_with_failed_rule() {
-    let quest_members = [
-        String::from("jimi"),
-        String::from("pato"),
-        String::from("volan"),
-    ];
-    let votes = [Vote::Success, Vote::Failed, Vote::Success];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Failed,
-        required_votes: 1,
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Failed);
-}
-
-#[test]
-fn test_quest_fails_on_full_crew_voting_failed_with_failed_rule() {
-    let quest_members = [
-        String::from("jimi"),
-        String::from("pato"),
-        String::from("volan"),
-    ];
-    let votes = [Vote::Failed, Vote::Failed, Vote::Failed];
-    let winner_rule = WinnerRule {
-        candidate: Vote::Failed,
-        required_votes: 1,
-    };
-    let mut quest = QuestNew::new(&quest_members, winner_rule);
-    for (index, voter) in quest_members.iter().enumerate() {
-        quest.vote(&voter, votes[index]);
-    }
-    let quest_result = quest.finish_quest().ok().unwrap();
-    assert_eq!(*quest_result.result(), Vote::Failed);
+    let quest_proposal_result = quest_proposal.finish_quest_proposal().ok().unwrap();
+    assert_eq!(*quest_proposal_result.result(), ProposalVote::InFavor);
 }
